@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Heat Exchanger Monitoring</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/auth.js" defer></script>
+    <script src="/static/js/navbar.js" defer></script>
+    <script src="/static/js/settings.js" defer></script>
+    <script src="/static/js/monitoring-settings.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌡️ Cooling Monitor</h1>
+            <p>Settings - Manage Redfish API Credentials & Email Alerts</p>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/alerts" id="alertsNavLink">
+                    Alerts
+                    <span id="alertBadge" class="alert-badge" style="display: none;">0</span>
+                </a>
+                <a href="/heat-exchanger-form" id="addHeatExchangerLink">Add Heat Exchanger</a>
+                <a href="/users" id="usersLink">Users</a>
+                <a href="/settings" id="settingsLink" class="active">Settings</a>
+                <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
+                    <span id="currentUser" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
+                    <button id="logoutBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>📊 Monitoring Control</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Enable or disable automatic data collection from all heat exchangers.
+                    <br><strong>Note:</strong> Disabling monitoring will reduce terminal output and stop polling devices.
+                </p>
+
+                <form id="monitoringForm">
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input 
+                                type="checkbox" 
+                                id="monitoring_enabled" 
+                                name="monitoring_enabled"
+                                checked
+                            >
+                            <span>Enable Monitoring</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="monitoring_polling_interval">Polling Interval (seconds)</label>
+                        <input 
+                            type="number" 
+                            id="monitoring_polling_interval" 
+                            name="monitoring_polling_interval" 
+                            min="5"
+                            max="300"
+                            step="5"
+                            value="30"
+                        >
+                        <small style="color: var(--text-secondary); font-size: 0.875rem;">
+                            How often to poll heat exchangers for data (minimum: 5 seconds, maximum: 300 seconds)
+                        </small>
+                    </div>
+
+                    <div id="monitoring-message" style="display: none; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;"></div>
+
+                    <button type="submit" class="btn">Save Monitoring Settings</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Redfish API Credentials</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    These credentials will be used for all heat exchangers when connecting to R-SCM devices.
+                </p>
+
+                <form id="credentialsForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            required
+                            placeholder="Enter Redfish username"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required
+                            placeholder="Enter Redfish password"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            required
+                            placeholder="Confirm password"
+                        >
+                    </div>
+
+                    <div id="message" style="display: none; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;"></div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="btn">Save Credentials</button>
+                        <button type="button" class="btn btn-secondary" onclick="loadCurrentCredentials()">Reset</button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Last Updated:</strong> <span id="lastUpdated">-</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📧 Email Alert Settings</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Configure SMTP settings for urgent alarm notifications (critical low flow alerts).
+                    <br><strong>Note:</strong> If SMTP authentication is blocked, use Teams notifications below instead.
+                </p>
+
+                <form id="smtpForm">
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input 
+                                type="checkbox" 
+                                id="smtp_enabled" 
+                                name="smtp_enabled"
+                            >
+                            <span>Enable Email Alerts</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smtp_server">SMTP Server</label>
+                        <input 
+                            type="text" 
+                            id="smtp_server" 
+                            name="smtp_server" 
+                            placeholder="smtp.office365.com"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smtp_port">SMTP Port</label>
+                        <input 
+                            type="number" 
+                            id="smtp_port" 
+                            name="smtp_port" 
+                            placeholder="587"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smtp_username">Email Username</label>
+                        <input 
+                            type="text" 
+                            id="smtp_username" 
+                            name="smtp_username" 
+                            placeholder="serviceaccount@yourdomain.com"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smtp_password">Email Password</label>
+                        <input 
+                            type="password" 
+                            id="smtp_password" 
+                            name="smtp_password" 
+                            placeholder="Leave blank to keep current password"
+                        >
+                        <small style="color: var(--text-secondary); font-size: 0.875rem;">
+                            Password will be encrypted before storage
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smtp_from_email">From Email Address</label>
+                        <input 
+                            type="email" 
+                            id="smtp_from_email" 
+                            name="smtp_from_email" 
+                            placeholder="serviceaccount@yourdomain.com"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smtp_to_emails">Recipient Emails (comma-separated)</label>
+                        <input 
+                            type="text" 
+                            id="smtp_to_emails" 
+                            name="smtp_to_emails" 
+                            placeholder="admin1@example.com, admin2@example.com"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input 
+                                type="checkbox" 
+                                id="smtp_use_tls" 
+                                name="smtp_use_tls"
+                                checked
+                            >
+                            <span>Use TLS/STARTTLS</span>
+                        </label>
+                    </div>
+
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);">
+
+                    <h3 style="margin-bottom: 1rem;">💬 Microsoft Teams Notifications</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        <strong>Recommended:</strong> Use Teams webhooks instead of email if SMTP is blocked.
+                        <a href="#teams-setup" style="color: var(--primary-color);">See setup instructions below ↓</a>
+                    </p>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input 
+                                type="checkbox" 
+                                id="teams_enabled" 
+                                name="teams_enabled"
+                            >
+                            <span>Enable Teams Notifications</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="teams_webhook_url">Teams Webhook URL</label>
+                        <input 
+                            type="text" 
+                            id="teams_webhook_url" 
+                            name="teams_webhook_url" 
+                            placeholder="https://outlook.office.com/webhook/..."
+                        >
+                        <small style="color: var(--text-secondary); font-size: 0.875rem;">
+                            Create an Incoming Webhook in your Teams channel, then paste the URL here
+                        </small>
+                    </div>
+
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);">
+
+                    <h3 style="margin-bottom: 1rem;">⚙️ Alarm Thresholds</h3>
+
+                    <div class="form-group">
+                        <label for="pump_flow_critical_threshold">Pump Flow Critical Threshold (L/min)</label>
+                        <input 
+                            type="number" 
+                            id="pump_flow_critical_threshold" 
+                            name="pump_flow_critical_threshold" 
+                            step="0.1"
+                            min="0"
+                            placeholder="10.0"
+                        >
+                        <small style="color: var(--text-secondary); font-size: 0.875rem;">
+                            Alert will be triggered when pump flow rate drops below this value
+                        </small>
+                    </div>
+
+                    <div id="smtpMessage" style="display: none; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;"></div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="btn">Save Notification Settings</button>
+                        <button type="button" class="btn btn-secondary" onclick="loadSMTPSettings()">Reset</button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Last Updated:</strong> <span id="smtpLastUpdated">-</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💬 How to Setup Microsoft Teams Webhook</h2>
+                <ol style="color: var(--text-secondary); line-height: 2; margin-left: 1.5rem;">
+                    <li>Open your Teams channel where you want to receive alerts</li>
+                    <li>Click the <strong>...</strong> menu → <strong>Manage channel</strong></li>
+                    <li>Go to <strong>Connectors</strong> or <strong>Apps</strong> tab</li>
+                    <li>Find and configure <strong>Incoming Webhook</strong></li>
+                    <li>Give it a name like "Cooling Monitor Alerts"</li>
+                    <li>Copy the webhook URL (starts with https://outlook.office.com/webhook/...)</li>
+                    <li>Paste the URL in the "Teams Webhook URL" field above</li>
+                    <li>Check "Enable Teams Notifications" and click Save</li>
+                </ol>
+                <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    <strong>💡 Tip:</strong> You can enable both email and Teams notifications, or just Teams if SMTP is blocked.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>⚠️ Important Notes</h2>
+                <ul style="color: var(--text-secondary); line-height: 1.8;">
+                    <li>Notification settings are used globally for all heat exchangers</li>
+                    <li>Redfish credentials are used globally for all heat exchangers</li>
+                    <li>Changes will take effect on the next polling cycle (30 seconds)</li>
+                    <li>Ensure the credentials have read access to Redfish API endpoints</li>
+                    <li>Default Redfish credentials are typically "admin" / "admin" for R-SCM devices</li>
+                    <li>Teams webhooks require no authentication - they're simpler than email</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

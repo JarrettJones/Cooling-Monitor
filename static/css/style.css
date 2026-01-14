@@ -1,0 +1,448 @@
+:root {
+    --primary-color: #646cff;
+    --primary-hover: #535bf2;
+    --secondary-color: #4a4a4a;
+    --secondary-hover: #5a5a5a;
+    --danger-color: #f44336;
+    --danger-hover: #da190b;
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --bg-color: #242424;
+    --card-bg: #1a1a1a;
+    --text-color: rgba(255, 255, 255, 0.87);
+    --border-color: #4a4a4a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.5rem;
+}
+
+.nav {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.nav a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav a:hover,
+.nav a.active {
+    background-color: rgba(100, 108, 255, 0.1);
+}
+
+/* Prevent navbar layout shift during auth check */
+.nav a[id$="Link"] {
+    opacity: 1;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.card h3 {
+    margin-bottom: 1rem;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.ws-status {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.ws-status.connected {
+    color: var(--success-color);
+}
+
+.ws-status.disconnected {
+    color: var(--danger-color);
+}
+
+.alert-badge {
+    display: inline-block;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    margin-left: 0.5rem;
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.alert-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-color: var(--danger-color);
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    animation: flash 1s ease-in-out infinite;
+}
+
+@keyframes flash {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.2;
+    }
+}
+
+.btn {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.25s;
+}
+
+.btn:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-hover);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-hover);
+}
+
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    background: var(--secondary-color);
+    border-color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.6em;
+    font-size: 1em;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: #2a2a2a;
+    color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-normal {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.status-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.status-critical {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+}
+
+.error {
+    color: var(--danger-color);
+    background-color: rgba(244, 67, 54, 0.1);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.metric {
+    text-align: center;
+}
+
+.metric strong {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+canvas {
+    max-height: 300px;
+}
+
+@media (max-width: 768px) {
+    .info-grid,
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-bar,
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+/* Alarm Section Styles */
+.alarm-icon {
+    animation: flash 1.5s infinite;
+    font-size: 1.2em;
+}
+
+@keyframes flash {
+    0%, 50%, 100% {
+        opacity: 1;
+    }
+    25%, 75% {
+        opacity: 0.3;
+    }
+}
+
+/* Alert indicator on cards */
+.card {
+    position: relative;
+}
+
+.alert-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    background-color: var(--danger-color);
+    border-radius: 50%;
+    animation: flash 1.5s infinite;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    z-index: 10;
+}
+
+.alarm-header:hover {
+    opacity: 0.8;
+}
+
+.alarm-content ul {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Alarm Table Styles */
+.alarm-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 0.5rem;
+    font-size: 0.9em;
+    border: 2px solid var(--border-color);
+}
+
+.alarm-table th {
+    background-color: rgba(100, 108, 255, 0.4);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+    border-right: 2px solid var(--border-color);
+    font-weight: 600;
+}
+
+.alarm-table th:last-child {
+    border-right: none;
+}
+
+.alarm-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(74, 74, 74, 0.5);
+    border-right: 2px solid var(--border-color);
+}
+
+.alarm-table td:last-child {
+    border-right: none;
+}
+
+.alarm-table tbody tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.alarm-table tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.alarm-table tbody tr:hover {
+    background-color: rgba(100, 108, 255, 0.2);
+}
+
+.alarm-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Urgent alarm card styling */
+.urgent-alarm-card {
+    border: 3px solid var(--danger-color) !important;
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+    animation: urgent-pulse 2s infinite;
+}
+
+@keyframes urgent-pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(244, 67, 54, 0.8);
+    }
+}

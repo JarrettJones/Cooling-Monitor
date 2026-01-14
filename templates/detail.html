@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooling Monitor - Heat Exchanger Details</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="/static/js/auth.js" defer></script>
+    <script src="/static/js/navbar.js" defer></script>
+    <script src="/static/js/detail.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌡️ Cooling Monitor</h1>
+            <p>Heat Exchanger Details</p>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/alerts" id="alertsNavLink">
+                    Alerts
+                    <span id="alertBadge" class="alert-badge" style="display: none;">0</span>
+                </a>
+                <a href="/heat-exchanger-form" id="addHeatExchangerLink" style="opacity: 0; pointer-events: none;">Add Heat Exchanger</a>
+                <a href="/users" id="usersLink" style="opacity: 0; pointer-events: none;">Users</a>
+                <a href="/settings" id="settingsLink" style="opacity: 0; pointer-events: none;">Settings</a>
+                <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
+                    <span id="currentUser" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
+                    <button id="logoutBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="detail-header">
+                <h2 id="heat-exchanger-name">Loading...</h2>
+                <div class="button-group">
+                    <button onclick="window.location.href='/'" class="btn btn-secondary">Back</button>
+                    <button id="edit-btn" class="btn btn-secondary" style="display: none;">Edit</button>
+                    <button id="delete-btn" class="btn btn-danger" style="display: none;">Delete</button>
+                </div>
+            </div>
+
+            <div id="heat-exchanger-info" class="card">
+                <h3>Information</h3>
+                <div class="info-grid" id="info-content">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div id="cdu-controller-status" class="card" style="display: none;">
+                <h3>CDU Controller Device Status</h3>
+                <div id="cdu-content">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div id="fan-status-card" class="card" style="display: none;">
+                <h3>Fan Status</h3>
+                <div id="fan-status-content">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div id="pump-status-card" class="card" style="display: none;">
+                <h3>Pump Status</h3>
+                <div id="pump-status-content">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Current Readings</h3>
+                <div id="current-readings" class="metrics-grid">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Temperature History</h3>
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const HEAT_EXCHANGER_ID = "{{ heat_exchanger_id }}";
+    </script>
+</body>
+</html>
