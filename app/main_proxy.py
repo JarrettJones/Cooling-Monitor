@@ -11,7 +11,7 @@ async def lifespan(app: FastAPI):
     # Import here to ensure proper initialization order
     from app.database import init_db, close_db
     from app.services.monitoring_service import MonitoringService
-    from app.core.config import settings
+    from app.config import settings
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
     
     # Initialize database
