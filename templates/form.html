@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cooling Monitor - Heat Exchanger Form</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <script src="/static/js/auth.js" defer></script>
-    <script src="/static/js/navbar.js" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <script src="{{ url_for('static', path='js/auth.js') }}" defer></script>
+    <script src="{{ url_for('static', path='js/navbar.js') }}" defer></script>
 </head>
 <body>
     <div class="container">
@@ -89,6 +89,6 @@
     <script>
         const HEAT_EXCHANGER_ID = "{{ heat_exchanger_id if heat_exchanger_id else '' }}";
     </script>
-    <script src="/static/js/form.js" defer></script>
+    <script src=\"{{ url_for('static', path='js/form.js') }}\" defer></script>
 </body>
 </html>
