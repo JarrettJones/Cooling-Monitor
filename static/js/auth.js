@@ -4,7 +4,7 @@
 async function checkUserRole() {
     console.log('checkUserRole() called');
     try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch(`${API_BASE}/auth/me`);
         console.log('Auth response status:', response.status);
         if (response.ok) {
             const user = await response.json();
@@ -90,11 +90,11 @@ async function checkUserRole() {
                 logoutBtn.setAttribute('data-listener-added', 'true');
                 logoutBtn.addEventListener('click', async () => {
                     try {
-                        await fetch('/api/auth/logout', { method: 'POST' });
-                        window.location.href = '/login';
+                        await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+                        navigateTo('/login');
                     } catch (error) {
                         console.error('Logout error:', error);
-                        window.location.href = '/login';
+                        navigateTo('/login');
                     }
                 });
             }

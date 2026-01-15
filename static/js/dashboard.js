@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Check user role and show/hide admin links
 async function checkUserRole() {
     try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch(`${API_BASE}/auth/me`);
         if (response.ok) {
             const user = await response.json();
             
@@ -52,11 +52,11 @@ async function checkUserRole() {
             // Setup logout button
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 try {
-                    await fetch('/api/auth/logout', { method: 'POST' });
-                    window.location.href = '/login';
+                    await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+                    navigateTo('/login');
                 } catch (error) {
                     console.error('Logout error:', error);
-                    window.location.href = '/login';
+                    navigateTo('/login');
                 }
             });
         } else {
@@ -219,7 +219,7 @@ async function createHeatExchangerCard(he, data) {
     // Check for active unacknowledged alerts for this heat exchanger
     let hasActiveAlerts = false;
     try {
-        const alertResponse = await fetch(`/api/alerts/count?heat_exchanger_id=${he.id}&acknowledged=false&resolved=false`);
+        const alertResponse = await fetch(`${API_BASE}/alerts/count?heat_exchanger_id=${he.id}&acknowledged=false&resolved=false`);
         if (alertResponse.ok) {
             const alertResult = await alertResponse.json();
             hasActiveAlerts = alertResult.count > 0;
@@ -350,7 +350,7 @@ async function createHeatExchangerCard(he, data) {
 // WebSocket connection
 function connectWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const wsUrl = `${protocol}//${window.location.host}${pathPrefix}/ws`;
     
     ws = new WebSocket(wsUrl);
     
@@ -414,7 +414,7 @@ function updateWSStatus(connected) {
 // Update alert badge with active alert count
 async function updateAlertBadge() {
     try {
-        const response = await fetch('/api/alerts/count?acknowledged=false&resolved=false');
+        const response = await fetch(`${API_BASE}/alerts/count?acknowledged=false&resolved=false`);
         if (!response.ok) return;
         
         const result = await response.json();
