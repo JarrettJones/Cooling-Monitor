@@ -42,7 +42,9 @@ function setupLoginForm() {
             console.log('Login successful:', result);
             
             // Login successful, redirect to settings or dashboard
-            const returnUrl = new URLSearchParams(window.location.search).get('return') || '/settings';
+            // Use the same path prefix detection as constants.js
+            const pathPrefix = window.location.pathname.startsWith('/cooling-monitor') ? '/cooling-monitor' : '';
+            const returnUrl = new URLSearchParams(window.location.search).get('return') || `${pathPrefix}/settings`;
             console.log('Redirecting to:', returnUrl);
             
             // Use setTimeout to ensure cookie is set before redirect
