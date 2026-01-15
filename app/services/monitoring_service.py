@@ -58,7 +58,7 @@ class MonitoringService:
             async with session_maker() as db:
                 # Get system settings for alarm threshold
                 settings_result = await db.execute(select(SystemSettings).limit(1))
-                system_settings = settings_result.scalar_one_or_none()
+                system_settings = settings_result.scalars().first()
                 pump_threshold = system_settings.pump_flow_critical_threshold if system_settings else 10.0
                 
                 result = await db.execute(

@@ -16,7 +16,7 @@ async def get_redfish_credentials():
     
     async with session_maker() as db:
         result = await db.execute(select(SystemSettings).limit(1))
-        system_settings = result.scalar_one_or_none()
+        system_settings = result.scalars().first()
         
         if system_settings:
             print(f"DEBUG: Loaded credentials from database - username: {system_settings.redfish_username}")
