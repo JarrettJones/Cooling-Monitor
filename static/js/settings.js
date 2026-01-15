@@ -12,22 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
 // Check user role and display current user
 async function checkUserRole() {
     try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch(`${API_BASE}/auth/me`);
         if (response.ok) {
             const user = await response.json();
             document.getElementById('currentUser').textContent = `👤 ${user.username}`;
             
             // Setup logout
             document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await fetch('/api/auth/logout', { method: 'POST' });
-                window.location.href = '/login';
+                await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+                navigateTo('/login');
             });
         } else {
-            window.location.href = '/login';
+            navigateTo('/login');
         }
     } catch (error) {
         console.error('Error checking user role:', error);
-        window.location.href = '/login';
+        navigateTo('/login');
     }
 }
 
