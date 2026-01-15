@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Check if user can edit/delete (admin only)
 async function checkAdminButtons() {
     try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch(`${API_BASE}/auth/me`);
         if (response.ok) {
             const user = await response.json();
             if (user.is_admin) {
@@ -744,7 +744,7 @@ function renderSinglePumpChart(pumpIndex) {
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('edit-btn').addEventListener('click', () => {
-        window.location.href = `/heat-exchanger-form?id=${HEAT_EXCHANGER_ID}`;
+        window.location.href = `${pathPrefix}/heat-exchanger-form?id=${HEAT_EXCHANGER_ID}`;
     });
     
     document.getElementById('delete-btn').addEventListener('click', async () => {
@@ -758,7 +758,7 @@ function setupEventListeners() {
             });
             
             if (response.ok) {
-                window.location.href = '/';
+                navigateTo('/');
             } else {
                 alert('Failed to delete heat exchanger');
             }
@@ -771,7 +771,7 @@ function setupEventListeners() {
 // WebSocket for real-time updates
 function connectWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const wsUrl = `${protocol}//${window.location.host}${pathPrefix}/ws`;
     const ws = new WebSocket(wsUrl);
     
     ws.onmessage = (event) => {
