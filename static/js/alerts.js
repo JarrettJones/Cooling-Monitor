@@ -1,6 +1,3 @@
-// API Base URL
-const API_BASE = '/api';
-
 // Current filters
 let currentFilters = {
     status: 'active',

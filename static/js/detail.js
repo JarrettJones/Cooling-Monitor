@@ -1,6 +1,3 @@
-// API Base URL
-const API_BASE = '/api';
-
 // Charts
 let temperatureChart;
 

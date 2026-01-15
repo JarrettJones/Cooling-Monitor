@@ -1,6 +1,3 @@
-// API Base URL
-const API_BASE = '/api';
-
 // Check if editing
 const isEdit = HEAT_EXCHANGER_ID && HEAT_EXCHANGER_ID.length > 0;
 

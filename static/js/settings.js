@@ -1,6 +1,3 @@
-// API Base URL
-const API_BASE = '/api';
-
 // Load current credentials on page load
 document.addEventListener('DOMContentLoaded', () => {
     checkUserRole();
