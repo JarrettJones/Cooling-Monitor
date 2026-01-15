@@ -118,10 +118,10 @@ async def home(request: Request):
         user = await get_current_user_optional(request)
         if not user:
             from fastapi.responses import RedirectResponse
-            return RedirectResponse(url="/landing", status_code=302)
+            return RedirectResponse(url=str(request.url_for("landing_page")), status_code=302)
     except:
         from fastapi.responses import RedirectResponse
-        return RedirectResponse(url="/landing", status_code=302)
+        return RedirectResponse(url=str(request.url_for("landing_page")), status_code=302)
     
     return templates.TemplateResponse("index.html", {"request": request})
 
