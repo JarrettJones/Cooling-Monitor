@@ -5,7 +5,7 @@
 {% block subtitle %}User Management{% endblock %}
 
 {% block extra_scripts %}
-<script src="/static/js/users.js" defer></script>
+<script src="{{ url_for('static', path='js/users.js') }}" defer></script>
 <style>
     .page-header {
         display: flex;
