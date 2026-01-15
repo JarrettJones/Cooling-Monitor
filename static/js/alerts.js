@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Check user role and display navigation
 async function checkUserRole() {
     try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch(`${API_BASE}/auth/me`);
         if (response.ok) {
             const user = await response.json();
             
@@ -41,8 +41,8 @@ async function checkUserRole() {
             
             // Setup logout
             document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await fetch('/api/auth/logout', { method: 'POST' });
-                window.location.href = '/login';
+                await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+                navigateTo('/login');
             });
         } else {
             // Show login button

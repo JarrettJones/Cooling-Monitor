@@ -12,16 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
 // Check user role and display current user
 async function checkUserRole() {
     try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch(`${API_BASE}/auth/me`);
         if (response.ok) {
             const user = await response.json();
             document.getElementById('currentUser').textContent = `👤 ${user.username}`;
         } else {
-            window.location.href = '/login';
+            navigateTo('/login');
         }
     } catch (error) {
         console.error('Error checking user role:', error);
-        window.location.href = '/login';
+        navigateTo('/login');
     }
 }
 
@@ -46,10 +46,10 @@ function setupEventListeners() {
 // Load all users
 async function loadUsers() {
     try {
-        const response = await fetch('/api/users/');
+        const response = await fetch(`${API_BASE}/users/`);
         if (!response.ok) {
             if (response.status === 401 || response.status === 403) {
-                window.location.href = '/login';
+                navigateTo('/login');
                 return;
             }
             throw new Error('Failed to load users');
@@ -148,7 +148,7 @@ async function saveUser() {
 
         if (editingUserId) {
             // Update existing user
-            response = await fetch(`/api/users/${editingUserId}`, {
+            response = await fetch(`${API_BASE}/users/${editingUserId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData)
@@ -159,7 +159,7 @@ async function saveUser() {
                 alert('Password is required for new users');
                 return;
             }
-            response = await fetch('/api/users/', {
+            response = await fetch(`${API_BASE}/users/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData)
@@ -194,7 +194,7 @@ async function deleteUser(userId, username) {
     }
 
     try {
-        const response = await fetch(`/api/users/${userId}`, {
+        const response = await fetch(`${API_BASE}/users/${userId}`, {
             method: 'DELETE'
         });
 
@@ -213,11 +213,11 @@ async function deleteUser(userId, username) {
 // Logout
 async function logout() {
     try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-        window.location.href = '/login';
+        await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+        navigateTo('/login');
     } catch (error) {
         console.error('Logout error:', error);
-        window.location.href = '/login';
+        navigateTo('/login');
     }
 }
 
