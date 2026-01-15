@@ -25,7 +25,7 @@ class MonitoringService:
             from app.database import async_session_maker as session_maker
             async with session_maker() as db:
                 result = await db.execute(select(SystemSettings))
-                settings = result.scalar_one_or_none()
+                settings = result.scalars().first()
                 
                 if not settings or not settings.monitoring_enabled:
                     return  # Skip polling if monitoring is disabled
@@ -64,7 +64,7 @@ class MonitoringService:
                 result = await db.execute(
                     select(HeatExchanger).where(HeatExchanger.id == heat_exchanger_id)
                 )
-                heat_exchanger = result.scalar_one_or_none()
+                heat_exchanger = result.scalars().first()
                 if heat_exchanger:
                     heat_exchanger.manager_type = manager_info.get("manager_type")
                     heat_exchanger.model = manager_info.get("model")
@@ -260,7 +260,7 @@ class MonitoringService:
                             Alert.resolved == False
                         )
                     )
-                    if not existing.scalar_one_or_none():
+                    if not existing.scalars().first():
                         try:
                             alert = Alert(
                                 heat_exchanger_id=heat_exchanger_id,
@@ -291,7 +291,7 @@ class MonitoringService:
                             Alert.resolved == False
                         )
                     )
-                    if not existing.scalar_one_or_none():
+                    if not existing.scalars().first():
                         try:
                             alert = Alert(
                                 heat_exchanger_id=heat_exchanger_id,
@@ -321,7 +321,7 @@ class MonitoringService:
                         Alert.resolved == False
                     )
                 )
-                if not existing.scalar_one_or_none():
+                if not existing.scalars().first():
                     try:
                         alert = Alert(
                             heat_exchanger_id=heat_exchanger_id,

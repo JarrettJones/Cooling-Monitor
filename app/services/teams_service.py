@@ -18,7 +18,7 @@ class TeamsService:
         """Send urgent alarm notification to Microsoft Teams"""
         # Get Teams settings from database
         result = await db.execute(select(SystemSettings).limit(1))
-        settings = result.scalar_one_or_none()
+        settings = result.scalars().first()
         
         if not settings or not settings.teams_enabled or not settings.teams_webhook_url:
             print(f"⚠️ URGENT ALARM: {heat_exchanger_name} - Pump {pump_id} flow rate critically low: {flow_rate} L/min (Teams disabled)")
