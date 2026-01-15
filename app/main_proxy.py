@@ -11,6 +11,11 @@ app = FastAPI(title="Cooling Monitor Proxy Wrapper")
 # Mount the cooling monitor app at /cooling-monitor
 app.mount("/cooling-monitor", cooling_monitor_app)
 
+print("✓ Mounted cooling_monitor_app at /cooling-monitor")
+print(f"✓ Available routes:")
+for route in app.routes:
+    print(f"  - {route.path}")
+
 @app.get("/")
 async def root():
     """Redirect root to cooling-monitor"""
