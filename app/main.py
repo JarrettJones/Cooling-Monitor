@@ -62,8 +62,7 @@ app = FastAPI(
     title="Cooling Monitor API",
     description="Real-time Heat Exchanger Monitoring System",
     version="1.0.0",
-    lifespan=lifespan,
-    root_path="/cooling-monitor"  # Tells FastAPI it's behind a reverse proxy at /cooling-monitor
+    lifespan=lifespan
 )
 
 # Mount static files
