@@ -339,8 +339,8 @@ async function createHeatExchangerCard(he, data) {
             ${hasActiveAlerts ? '<span class="alert-indicator"></span>' : ''}
             
             <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <button onclick="window.location.href='/heat-exchanger/${he.id}'" class="btn">View Details</button>
-                ${isAdmin ? `<button onclick="window.location.href='/heat-exchanger-form?id=${he.id}'" class="btn btn-secondary">Edit</button>` : ''}
+                <button onclick="window.location.href='${pathPrefix}/heat-exchanger/${he.id}'" class="btn">View Details</button>
+                ${isAdmin ? `<button onclick="window.location.href='${pathPrefix}/heat-exchanger-form?id=${he.id}'" class="btn btn-secondary">Edit</button>` : ''}
                 ${isAdmin ? `<button onclick="deleteHeatExchanger(${he.id}, '${he.name}')" class="btn btn-danger">Delete</button>` : ''}
             </div>
         </div>

@@ -15,14 +15,14 @@
             <h1>🌡️ Cooling Monitor</h1>
             <p>Real-time Heat Exchanger Monitoring System</p>
             <nav class="nav">
-                <a href="/">Dashboard</a>
-                <a href="/alerts" id="alertsNavLink">
+                <a href="{{ url_for('home') }}">Dashboard</a>
+                <a href="{{ url_for('alerts_page') }}" id="alertsNavLink">
                     Alerts
                     <span id="alertBadge" class="alert-badge" style="display: none;">0</span>
                 </a>
-                <a href="/heat-exchanger-form" id="addHeatExchangerLink" class="active" style="display: none;">Add Heat Exchanger</a>
-                <a href="/users" id="usersLink" style="display: none;">Users</a>
-                <a href="/settings" id="settingsLink" style="display: none;">Settings</a>
+                <a href="{{ url_for('heat_exchanger_form') }}" id="addHeatExchangerLink" class="active" style="display: none;">Add Heat Exchanger</a>
+                <a href="{{ url_for('users_page') }}" id="usersLink" style="display: none;">Users</a>
+                <a href="{{ url_for('settings_page') }}" id="settingsLink" style="display: none;">Settings</a>
                 <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
                     <span id="currentUser" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
                     <button id="logoutBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
