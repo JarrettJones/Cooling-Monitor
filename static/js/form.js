@@ -73,7 +73,7 @@ function setupForm() {
                 submitBtn.style.backgroundColor = 'var(--success-color)';
                 
                 setTimeout(() => {
-                    window.location.href = '/';
+                    navigateTo('/');
                 }, 1500);
             } else {
                 const error = await response.json();
