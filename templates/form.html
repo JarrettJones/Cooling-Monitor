@@ -90,6 +90,6 @@
     <script>
         const HEAT_EXCHANGER_ID = "{{ heat_exchanger_id if heat_exchanger_id else '' }}";
     </script>
-    <script src=\"{{ url_for('static', path='js/form.js') }}\" defer></script>
+    <script src="{{ url_for('static', path='js/form.js') }}" defer></script>
 </body>
 </html>
