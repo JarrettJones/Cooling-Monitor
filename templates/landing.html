@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cooling Monitor - Real-Time Heat Exchanger Monitoring</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         .hero {
@@ -93,7 +93,7 @@
         <header class="header" style="background: transparent; box-shadow: none;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h1 style="margin: 0;">🌡️ Cooling Monitor</h1>
-                <a href="/login" class="btn">Login</a>
+                <a href="{{ url_for('login_page') }}" class="btn">Login</a>
             </div>
         </header>
 
@@ -101,7 +101,7 @@
             <div class="hero">
                 <h1>Real-Time Heat Exchanger Monitoring</h1>
                 <p>Monitor and manage your data center cooling infrastructure with precision. Track temperature, pump performance, fan status, and receive instant alerts for critical events.</p>
-                <a href="/login" class="btn btn-large" style="background: white; color: var(--primary-color);">Get Started →</a>
+                <a href="{{ url_for('login_page') }}" class="btn btn-large" style="background: white; color: var(--primary-color);">Get Started →</a>
             </div>
 
             <div class="features">
@@ -160,7 +160,7 @@
                 <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 1.5rem;">
                     Login to access your heat exchanger monitoring dashboard
                 </p>
-                <a href="/login" class="btn btn-large">Access Dashboard →</a>
+                <a href="{{ url_for('login_page') }}" class="btn btn-large">Access Dashboard →</a>
             </div>
         </main>
     </div>

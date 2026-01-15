@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cooling Monitor{% endblock %}</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 <body>
     <div class="container">
@@ -12,14 +12,14 @@
             <h1>🌡️ Cooling Monitor</h1>
             <p>{% block subtitle %}Real-time Heat Exchanger Monitoring System{% endblock %}</p>
             <nav class="nav">
-                <a href="/" {% if request.path == "/" %}class="active"{% endif %}>Dashboard</a>
-                <a href="/alerts" id="alertsNavLink" {% if request.path == "/alerts" %}class="active"{% endif %}>
+                <a href="{{ url_for('home') }}" {% if request.path == "/" or request.path.endswith('/') %}class="active"{% endif %}>Dashboard</a>
+                <a href="{{ url_for('alerts_page') }}" id="alertsNavLink" {% if '/alerts' in request.path %}class="active"{% endif %}>
                     Alerts
                     <span id="alertBadge" class="alert-badge" style="display: none;">0</span>
                 </a>
-                <a href="/heat-exchanger-form" id="addHeatExchangerLink" style="opacity: 0; pointer-events: none;" {% if request.path == "/heat-exchanger-form" %}class="active"{% endif %}>Add Heat Exchanger</a>
-                <a href="/users" id="usersLink" style="opacity: 0; pointer-events: none;" {% if request.path == "/users" %}class="active"{% endif %}>Users</a>
-                <a href="/settings" id="settingsLink" style="opacity: 0; pointer-events: none;" {% if request.path == "/settings" %}class="active"{% endif %}>Settings</a>
+                <a href="{{ url_for('heat_exchanger_form') }}" id="addHeatExchangerLink" style="opacity: 0; pointer-events: none;" {% if '/heat-exchanger-form' in request.path %}class="active"{% endif %}>Add Heat Exchanger</a>
+                <a href="{{ url_for('users_page') }}" id="usersLink" style="opacity: 0; pointer-events: none;" {% if '/users' in request.path %}class="active"{% endif %}>Users</a>
+                <a href="{{ url_for('settings_page') }}" id="settingsLink" style="opacity: 0; pointer-events: none;" {% if '/settings' in request.path %}class="active"{% endif %}>Settings</a>
                 <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
                     <span id="currentUser" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
                     <button id="logoutBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
@@ -32,9 +32,9 @@
         </main>
     </div>
 
-    <script src="/static/js/constants.js"></script>
-    <script src="/static/js/auth.js"></script>
-    <script src="/static/js/navbar.js"></script>
+    <script src="{{ url_for('static', path='js/constants.js') }}"></script>
+    <script src="{{ url_for('static', path='js/auth.js') }}"></script>
+    <script src="{{ url_for('static', path='js/navbar.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
