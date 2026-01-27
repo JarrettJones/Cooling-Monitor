@@ -196,3 +196,56 @@ async def add_comment(
     await db.commit()
     
     return {"message": "Comment added", "alert_id": alert_id}
+
+
+@router.delete("/heat-exchanger/{heat_exchanger_id}/clear-all")
+async def clear_all_alerts(
+    heat_exchanger_id: int,
+    db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Clear (resolve) all alerts for a specific heat exchanger - Admin only"""
+    # Check if user is admin
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Verify heat exchanger exists
+    result = await db.execute(
+        select(HeatExchanger).where(HeatExchanger.id == heat_exchanger_id)
+    )
+    heat_exchanger = result.scalar_one_or_none()
+    
+    if not heat_exchanger:
+        raise HTTPException(status_code=404, detail="Heat exchanger not found")
+    
+    # Get all unresolved alerts for this heat exchanger
+    result = await db.execute(
+        select(Alert).where(
+            and_(
+                Alert.heat_exchanger_id == heat_exchanger_id,
+                Alert.resolved == False
+            )
+        )
+    )
+    alerts = result.scalars().all()
+    
+    # Mark all as resolved
+    now = datetime.utcnow()
+    count = 0
+    for alert in alerts:
+        alert.resolved = True
+        alert.resolved_by = current_user.username
+        alert.resolved_at = now
+        if not alert.acknowledged:
+            alert.acknowledged = True
+            alert.acknowledged_by = current_user.username
+            alert.acknowledged_at = now
+        count += 1
+    
+    await db.commit()
+    
+    return {
+        "message": f"Cleared {count} alert(s) for {heat_exchanger.name}",
+        "count": count,
+        "heat_exchanger_name": heat_exchanger.name
+    }

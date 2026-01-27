@@ -37,6 +37,10 @@ async function checkUserRole() {
                 document.getElementById('addHeatExchangerLink').style.display = 'inline-block';
                 document.getElementById('usersLink').style.display = 'inline-block';
                 document.getElementById('settingsLink').style.display = 'inline-block';
+                
+                // Show clear all button and set up handler
+                document.getElementById('clearAllContainer').style.display = 'flex';
+                document.getElementById('clearAllBtn').addEventListener('click', handleClearAll);
             }
             
             // Setup logout
@@ -352,4 +356,41 @@ function setupFilters() {
         currentFilters.severity = e.target.value;
         loadAlerts();
     });
+}
+
+// Handle clearing all alerts for selected system
+async function handleClearAll() {
+    const heatExchangerId = currentFilters.heatExchanger;
+    
+    if (heatExchangerId === 'all') {
+        alert('Please select a specific heat exchanger to clear alerts.');
+        return;
+    }
+    
+    // Get the heat exchanger name from the dropdown
+    const select = document.getElementById('filterHeatExchanger');
+    const selectedOption = select.options[select.selectedIndex];
+    const heatExchangerName = selectedOption.text;
+    
+    if (!confirm(`Are you sure you want to clear ALL alerts for ${heatExchangerName}?\n\nThis will mark all unresolved alerts as resolved.`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/alerts/heat-exchanger/${heatExchangerId}/clear-all`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            alert(data.message);
+            loadAlerts(); // Reload alerts
+        } else {
+            const error = await response.json();
+            alert(`Error: ${error.detail || 'Failed to clear alerts'}`);
+        }
+    } catch (error) {
+        console.error('Error clearing alerts:', error);
+        alert('Failed to clear alerts. Please try again.');
+    }
 }
