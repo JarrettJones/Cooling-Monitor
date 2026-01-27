@@ -13,7 +13,7 @@ from app.models.heat_exchanger import (
     HeatExchangerResponse
 )
 from app.models.user import User
-from app.routers.auth import require_admin
+from app.routers.auth import require_admin, get_current_user
 from app.services.redfish_client import RedfishClient, get_redfish_credentials
 from app.services.monitoring_service import MonitoringService
 
@@ -48,9 +48,9 @@ async def get_heat_exchanger(heat_exchanger_id: int, db: AsyncSession = Depends(
 async def create_heat_exchanger(
     heat_exchanger: HeatExchangerCreate,
     db: AsyncSession = Depends(get_session),
-    current_user: User = Depends(require_admin)
+    current_user: User = Depends(get_current_user)
 ):
-    """Create a new heat exchanger (admin only)"""
+    """Create a new heat exchanger"""
     # Test Redfish connection
     username, password = await get_redfish_credentials()
     client = RedfishClient(heat_exchanger.rscm_ip, username, password)
