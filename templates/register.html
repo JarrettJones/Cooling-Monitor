@@ -126,8 +126,8 @@
     <div class="register-container">
         <div class="register-card">
             <div class="register-header">
-                <h1>Create Account</h1>
-                <p>Register for Heat Exchanger Monitoring System</p>
+                <h1>Request Access</h1>
+                <p>Fill out this form to request access to the Cooling Monitor application. Choose your own username and password - an administrator will review and activate your account.</p>
             </div>
             
             <div id="errorMessage" class="error-message"></div>
@@ -135,32 +135,69 @@
             
             <form id="registerForm">
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required minlength="3" maxlength="50" autocomplete="username">
-                    <small>Minimum 3 characters</small>
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="your.email@microsoft.com">
+                    <small>Use your Microsoft email address</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password">
-                    <small>Minimum 6 characters</small>
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_-]+" autocomplete="username">
+                    <small>3-20 characters: letters, numbers, underscore, or hyphen</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" autocomplete="new-password">
-                    <small>Re-enter your password</small>
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password">
+                    <small>Minimum 8 characters</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8" autocomplete="new-password">
+                    <small>Confirm your password</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="firstName">First Name *</label>
+                    <input type="text" id="firstName" name="firstName" required placeholder="Enter your first name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" placeholder="Enter your last name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="team">Team</label>
+                    <select id="team" name="team">
+                        <option value="">Select your team...</option>
+                        <option value="Data Center Operations">Data Center Operations</option>
+                        <option value="Facilities">Facilities</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="IT Operations">IT Operations</option>
+                        <option value="Management">Management</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="businessJustification">Business Justification *</label>
+                    <textarea id="businessJustification" name="businessJustification" required maxlength="500" rows="4" 
+                              placeholder="Please explain why you need access to this application and how you will use it..."
+                              style="width: 100%; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
+                    <small>Maximum 500 characters</small>
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-register">Register</button>
             </form>
             
             <div class="register-footer">
-                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
-                    Your account will be reviewed by an administrator before activation.
+                <p style="color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 0.875rem;">
+                    <strong>Note:</strong> Your password is securely hashed and will never be visible to administrators. Once approved, you can log in immediately with your chosen credentials.
                 </p>
                 <p>
-                    Already have an account? <a href="#" id="loginLink">Sign in</a>
+                    Already have an account? <a href="#" id="loginLink">Login here</a>
                 </p>
             </div>
         </div>
@@ -175,9 +212,14 @@
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const email = document.getElementById('email').value;
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const team = document.getElementById('team').value;
+            const businessJustification = document.getElementById('businessJustification').value;
             
             // Clear messages
             document.getElementById('errorMessage').style.display = 'none';
@@ -189,6 +231,18 @@
                 return;
             }
             
+            // Validate email domain
+            if (!email.toLowerCase().endsWith('@microsoft.com')) {
+                showError('Please use your Microsoft email address');
+                return;
+            }
+            
+            // Validate password length
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters');
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_BASE}/auth/register`, {
                     method: 'POST',
@@ -196,9 +250,14 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        email,
                         username,
                         password,
-                        confirm_password: confirmPassword
+                        confirm_password: confirmPassword,
+                        first_name: firstName,
+                        last_name: lastName || null,
+                        team: team || null,
+                        business_justification: businessJustification
                     })
                 });
                 
@@ -207,9 +266,9 @@
                 if (response.ok) {
                     showSuccess(data.message);
                     // Disable form
-                    document.getElementById('registerForm').querySelectorAll('input, button').forEach(el => el.disabled = true);
-                    // Redirect to login after 3 seconds
-                    setTimeout(() => navigateTo('/login'), 3000);
+                    document.getElementById('registerForm').querySelectorAll('input, button, select, textarea').forEach(el => el.disabled = true);
+                    // Redirect to login after 5 seconds
+                    setTimeout(() => navigateTo('/login'), 5000);
                 } else {
                     showError(data.detail || 'Registration failed');
                 }

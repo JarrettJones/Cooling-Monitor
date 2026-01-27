@@ -28,6 +28,11 @@ class UserResponseExtended(BaseModel):
     """Extended user response with role name"""
     id: int
     username: str
+    email: str
+    first_name: str
+    last_name: Optional[str] = None
+    team: Optional[str] = None
+    business_justification: Optional[str] = None
     role: str
     is_active: bool
     created_at: str
@@ -49,6 +54,11 @@ async def list_users(
         UserResponseExtended(
             id=user.id,
             username=user.username,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            team=user.team,
+            business_justification=user.business_justification,
             role="admin" if user.is_admin else "technician",
             is_active=bool(user.is_active),
             created_at=user.created_at.isoformat() if user.created_at else ""
@@ -80,7 +90,9 @@ async def create_user(
     is_admin = 1 if user_data.role == "admin" else 0
     new_user = User(
         username=user_data.username,
+        email=f"{user_data.username}@microsoft.com",  # Default email for admin-created users
         hashed_password=User.hash_password(user_data.password),
+        first_name=user_data.username,  # Default first name
         is_admin=is_admin,
         is_active=1  # Admin-created users are active immediately
     )
@@ -92,6 +104,11 @@ async def create_user(
     return UserResponseExtended(
         id=new_user.id,
         username=new_user.username,
+        email=new_user.email,
+        first_name=new_user.first_name,
+        last_name=new_user.last_name,
+        team=new_user.team,
+        business_justification=new_user.business_justification,
         role=user_data.role,
         is_active=True,
         created_at=new_user.created_at.isoformat() if new_user.created_at else ""
@@ -136,6 +153,11 @@ async def update_user(
     return UserResponseExtended(
         id=user.id,
         username=user.username,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        team=user.team,
+        business_justification=user.business_justification,
         role="admin" if user.is_admin else "technician",
         is_active=bool(user.is_active),
         created_at=user.created_at.isoformat() if user.created_at else ""

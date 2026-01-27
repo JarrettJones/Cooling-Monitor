@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 import bcrypt
 from app.database import Base
 
@@ -11,7 +12,12 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=True)
+    team = Column(String, nullable=True)
+    business_justification = Column(String, nullable=True)
     is_admin = Column(Integer, default=0)  # SQLite uses 1/0 for boolean
     is_active = Column(Integer, default=0)  # New users require approval
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -38,6 +44,10 @@ class UserResponse(BaseModel):
     """Schema for user response"""
     id: int
     username: str
+    email: str
+    first_name: str
+    last_name: Optional[str] = None
+    team: Optional[str] = None
     is_admin: bool
     is_active: bool
     created_at: datetime
@@ -48,6 +58,11 @@ class UserResponse(BaseModel):
 
 class RegisterRequest(BaseModel):
     """Schema for user registration"""
+    email: str
     username: str
     password: str
     confirm_password: str
+    first_name: str
+    last_name: Optional[str] = None
+    team: Optional[str] = None
+    business_justification: str

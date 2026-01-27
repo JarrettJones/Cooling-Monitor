@@ -78,11 +78,13 @@ function renderUsers() {
             <td>
                 ${escapeHtml(user.username)}
                 ${!user.is_active ? '<span style="color: var(--warning-color); font-size: 0.875rem; margin-left: 0.5rem;">(Pending)</span>' : ''}
+                ${!user.is_active ? `<br><small style="color: var(--text-secondary);">${escapeHtml(user.email)}</small>` : ''}
             </td>
             <td><span class="role-badge role-${user.role}">${user.role}</span></td>
             <td>${formatDate(user.created_at)}</td>
             <td>
                 ${!user.is_active ? `
+                    <button class="btn btn-secondary btn-small" onclick="viewUserDetails(${user.id})">View Details</button>
                     <button class="btn btn-success btn-small" onclick="approveUser(${user.id}, '${escapeHtml(user.username)}')">Approve</button>
                     <button class="btn btn-danger btn-small" onclick="denyUser(${user.id}, '${escapeHtml(user.username)}')">Deny</button>
                 ` : `
@@ -245,6 +247,28 @@ async function approveUser(userId, username) {
         console.error('Error approving user:', error);
         alert(`Error: ${error.message}`);
     }
+}
+
+// View user details
+function viewUserDetails(userId) {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    
+    const details = `
+User Registration Details:
+
+Username: ${user.username}
+Email: ${user.email}
+First Name: ${user.first_name}
+Last Name: ${user.last_name || 'N/A'}
+Team: ${user.team || 'N/A'}
+Registered: ${formatDate(user.created_at)}
+
+Business Justification:
+${user.business_justification || 'N/A'}
+    `.trim();
+    
+    alert(details);
 }
 
 // Deny user registration

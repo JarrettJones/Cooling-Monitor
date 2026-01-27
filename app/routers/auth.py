@@ -177,6 +177,34 @@ async def register(
             detail="Passwords do not match"
         )
     
+    # Validate password length
+    if len(register_data.password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters"
+        )
+    
+    # Validate username format
+    if not register_data.username or len(register_data.username) < 3 or len(register_data.username) > 20:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username must be 3-20 characters"
+        )
+    
+    # Validate email is Microsoft domain
+    if not register_data.email.lower().endswith('@microsoft.com'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please use your Microsoft email address"
+        )
+    
+    # Validate business justification length
+    if len(register_data.business_justification) > 500:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Business justification must be 500 characters or less"
+        )
+    
     # Check if username already exists
     result = await db.execute(
         select(User).where(User.username == register_data.username)
@@ -189,10 +217,27 @@ async def register(
             detail="Username already taken"
         )
     
+    # Check if email already exists
+    result = await db.execute(
+        select(User).where(User.email == register_data.email)
+    )
+    existing_email = result.scalar_one_or_none()
+    
+    if existing_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
     # Create new user (inactive by default)
     new_user = User(
         username=register_data.username,
+        email=register_data.email,
         hashed_password=User.hash_password(register_data.password),
+        first_name=register_data.first_name,
+        last_name=register_data.last_name,
+        team=register_data.team,
+        business_justification=register_data.business_justification,
         is_admin=False,
         is_active=False  # Requires admin approval
     )
