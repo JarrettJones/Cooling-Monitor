@@ -180,6 +180,11 @@ async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+
 @app.get("/users", response_class=HTMLResponse)
 async def users_page(request: Request):
     """User management page - requires admin privileges"""

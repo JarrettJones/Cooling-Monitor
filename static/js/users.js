@@ -69,15 +69,27 @@ function renderUsers() {
     const tbody = document.getElementById('usersBody');
 
     if (users.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No users found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No users found</td></tr>';
         return;
     }
 
     tbody.innerHTML = users.map(user => `
         <tr>
-            <td>${escapeHtml(user.username)}</td>
+            <td>
+                ${escapeHtml(user.username)}
+                ${!user.is_active ? '<span style="color: var(--warning-color); font-size: 0.875rem; margin-left: 0.5rem;">(Pending)</span>' : ''}
+            </td>
             <td><span class="role-badge role-${user.role}">${user.role}</span></td>
             <td>${formatDate(user.created_at)}</td>
+            <td>
+                ${!user.is_active ? `
+                    <button class="btn btn-success btn-small" onclick="approveUser(${user.id}, '${escapeHtml(user.username)}')">Approve</button>
+                    <button class="btn btn-danger btn-small" onclick="denyUser(${user.id}, '${escapeHtml(user.username)}')">Deny</button>
+                ` : `
+                    <button class="btn btn-secondary btn-small" onclick="editUser(${user.id})">Edit</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')">Delete</button>
+                `}
+            </td>
             <td>
                 <div class="action-buttons">
                     <button class="btn btn-small" onclick="editUser(${user.id})">Edit</button>
@@ -206,6 +218,56 @@ async function deleteUser(userId, username) {
         await loadUsers();
     } catch (error) {
         console.error('Error deleting user:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+// Approve user
+async function approveUser(userId, username) {
+    if (!confirm(`Approve registration for "${username}"?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/users/${userId}/approve`, {
+            method: 'POST'
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to approve user');
+        }
+
+        const result = await response.json();
+        alert(result.message);
+        await loadUsers();
+    } catch (error) {
+        console.error('Error approving user:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+// Deny user registration
+async function denyUser(userId, username) {
+    if (!confirm(`Deny and delete registration for "${username}"?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/users/${userId}/deny`, {
+            method: 'POST'
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to deny user');
+        }
+
+        const result = await response.json();
+        alert(result.message);
+        await loadUsers();
+    } catch (error) {
+        console.error('Error denying user:', error);
         alert(`Error: ${error.message}`);
     }
 }

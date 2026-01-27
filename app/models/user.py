@@ -12,7 +12,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
-    is_admin = Column(Integer, default=1)  # SQLite uses 1/0 for boolean
+    is_admin = Column(Integer, default=0)  # SQLite uses 1/0 for boolean
+    is_active = Column(Integer, default=0)  # New users require approval
     created_at = Column(DateTime, default=datetime.utcnow)
     
     def verify_password(self, password: str) -> bool:
@@ -38,6 +39,15 @@ class UserResponse(BaseModel):
     id: int
     username: str
     is_admin: bool
+    is_active: bool
+    created_at: datetime
     
     class Config:
         from_attributes = True
+
+
+class RegisterRequest(BaseModel):
+    """Schema for user registration"""
+    username: str
+    password: str
+    confirm_password: str

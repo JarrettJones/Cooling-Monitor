@@ -81,7 +81,7 @@
 
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); text-align: center;">
                 <p style="font-size: 0.875rem; color: var(--text-secondary);">
-                    Default credentials: admin / admin
+                    Don't have an account? <a href="#" id="registerLink" style="color: var(--primary-color); text-decoration: none;">Register here</a>
                 </p>
             </div>
         </div>
@@ -89,5 +89,11 @@
 
     <script src="{{ url_for('static', path='js/constants.js') }}"></script>
     <script src="{{ url_for('static', path='js/login.js') }}"></script>
+    <script>
+        document.getElementById('registerLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('/register');
+        });
+    </script>
 </body>
 </html>

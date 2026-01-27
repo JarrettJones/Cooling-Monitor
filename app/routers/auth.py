@@ -6,7 +6,7 @@ from jose import jwt, JWTError
 import secrets
 
 from app.database import get_session
-from app.models.user import User, LoginRequest, UserResponse
+from app.models.user import User, LoginRequest, UserResponse, RegisterRequest
 from app.config import settings
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
@@ -121,6 +121,13 @@ async def login(
             detail="Incorrect username or password"
         )
     
+    # Check if user is active
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account pending approval. Please contact an administrator."
+        )
+    
     # Create access token
     print(f"[DEBUG AUTH] Creating token for user_id: {user.id}, username: {user.username}")
     print(f"[DEBUG AUTH] Using SECRET_KEY length: {len(SECRET_KEY)}")
@@ -155,3 +162,45 @@ async def logout(response: Response):
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current user info"""
     return UserResponse.model_validate(current_user)
+
+
+@router.post("/register")
+async def register(
+    register_data: RegisterRequest,
+    db: AsyncSession = Depends(get_session)
+):
+    """Register a new user account - requires admin approval"""
+    # Validate passwords match
+    if register_data.password != register_data.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Passwords do not match"
+        )
+    
+    # Check if username already exists
+    result = await db.execute(
+        select(User).where(User.username == register_data.username)
+    )
+    existing_user = result.scalar_one_or_none()
+    
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already taken"
+        )
+    
+    # Create new user (inactive by default)
+    new_user = User(
+        username=register_data.username,
+        hashed_password=User.hash_password(register_data.password),
+        is_admin=False,
+        is_active=False  # Requires admin approval
+    )
+    
+    db.add(new_user)
+    await db.commit()
+    
+    return {
+        "message": "Registration successful. Your account is pending approval by an administrator.",
+        "username": register_data.username
+    }

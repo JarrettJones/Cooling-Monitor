@@ -29,6 +29,7 @@ class UserResponseExtended(BaseModel):
     id: int
     username: str
     role: str
+    is_active: bool
     created_at: str
     
     class Config:
@@ -41,7 +42,7 @@ async def list_users(
     db: AsyncSession = Depends(get_session)
 ):
     """List all users (admin only)"""
-    result = await db.execute(select(User).order_by(User.username))
+    result = await db.execute(select(User).order_by(User.is_active, User.username))
     users = result.scalars().all()
     
     return [
@@ -49,6 +50,7 @@ async def list_users(
             id=user.id,
             username=user.username,
             role="admin" if user.is_admin else "technician",
+            is_active=bool(user.is_active),
             created_at=user.created_at.isoformat() if user.created_at else ""
         )
         for user in users
@@ -79,7 +81,8 @@ async def create_user(
     new_user = User(
         username=user_data.username,
         hashed_password=User.hash_password(user_data.password),
-        is_admin=is_admin
+        is_admin=is_admin,
+        is_active=1  # Admin-created users are active immediately
     )
     
     db.add(new_user)
@@ -90,6 +93,7 @@ async def create_user(
         id=new_user.id,
         username=new_user.username,
         role=user_data.role,
+        is_active=True,
         created_at=new_user.created_at.isoformat() if new_user.created_at else ""
     )
 
@@ -133,6 +137,7 @@ async def update_user(
         id=user.id,
         username=user.username,
         role="admin" if user.is_admin else "technician",
+        is_active=bool(user.is_active),
         created_at=user.created_at.isoformat() if user.created_at else ""
     )
 
@@ -164,3 +169,60 @@ async def delete_user(
     await db.commit()
     
     return {"message": f"User {user.username} deleted successfully"}
+
+
+@router.post("/{user_id}/approve")
+async def approve_user(
+    user_id: int,
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_session)
+):
+    """Approve a pending user account (admin only)"""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    if user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User is already active"
+        )
+    
+    user.is_active = 1
+    await db.commit()
+    
+    return {"message": f"User {user.username} has been approved"}
+
+
+@router.post("/{user_id}/deny")
+async def deny_user(
+    user_id: int,
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_session)
+):
+    """Deny (delete) a pending user account (admin only)"""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    if user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot deny an already active user. Use delete instead."
+        )
+    
+    username = user.username
+    await db.execute(delete(User).where(User.id == user_id))
+    await db.commit()
+    
+    return {"message": f"User {username} registration has been denied and deleted"}
