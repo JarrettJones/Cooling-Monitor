@@ -7,11 +7,34 @@
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
     <style>
         body {
-            background-color: var(--bg-color);
+            background: #0f172a;
+            position: relative;
+            background-image: 
+                linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
         .login-container {
             max-width: 400px;
             margin: 4rem auto;
+            position: relative;
+            z-index: 1;
         }
         .login-card {
             background: var(--card-bg);
@@ -47,7 +70,6 @@
         <div class="login-card">
             <div class="login-header">
                 <h1>🌡️ Cooling Monitor</h1>
-                <p style="color: var(--text-secondary);">Admin Login</p>
             </div>
 
             <div id="errorMessage" class="error-message"></div>

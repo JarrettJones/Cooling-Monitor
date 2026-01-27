@@ -12,60 +12,115 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+            background: #0f172a;
+            padding: 1rem;
+            position: relative;
+            background-image: 
+                linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            pointer-events: none;
         }
         
         .register-container {
             width: 100%;
-            max-width: 450px;
-            padding: 2rem;
+            max-width: 800px;
         }
         
         .register-card {
             background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
         }
         
         .register-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         
         .register-header h1 {
-            font-size: 2rem;
+            font-size: 1.75rem;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
         }
         
         .register-header p {
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
         
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             font-weight: 500;
             color: var(--text-primary);
+            font-size: 0.9rem;
         }
         
-        .form-group input {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.65rem;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 4px;
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-family: inherit;
         }
         
-        .form-group input:focus {
+        .form-group select {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            cursor: pointer;
+        }
+        
+        .form-group select option {
+            background-color: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
         }
@@ -74,21 +129,21 @@
             display: block;
             margin-top: 0.25rem;
             color: var(--text-secondary);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
         }
         
         .btn-register {
             width: 100%;
-            padding: 0.875rem;
+            padding: 0.75rem;
             font-size: 1rem;
             font-weight: 600;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
         
         .register-footer {
             text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
             border-top: 1px solid var(--border-color);
         }
         
@@ -105,20 +160,32 @@
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid #ef4444;
             color: #fca5a5;
-            padding: 0.75rem;
-            border-radius: 6px;
+            padding: 0.65rem;
+            border-radius: 4px;
             margin-bottom: 1rem;
             display: none;
+            font-size: 0.9rem;
         }
         
         .success-message {
             background: rgba(34, 197, 94, 0.1);
             border: 1px solid #22c55e;
             color: #86efac;
-            padding: 0.75rem;
-            border-radius: 6px;
+            padding: 0.65rem;
+            border-radius: 4px;
             margin-bottom: 1rem;
             display: none;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .register-card {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -134,62 +201,64 @@
             <div id="successMessage" class="success-message"></div>
             
             <form id="registerForm">
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="email">Email *</label>
                     <input type="email" id="email" name="email" required placeholder="your.email@microsoft.com">
                     <small>Use your Microsoft email address</small>
                 </div>
                 
-                <div class="form-group">
-                    <label for="username">Username *</label>
-                    <input type="text" id="username" name="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_-]+" autocomplete="username">
-                    <small>3-20 characters: letters, numbers, underscore, or hyphen</small>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" name="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_-]+" autocomplete="username">
+                        <small>3-20 characters</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="team">Team</label>
+                        <select id="team" name="team">
+                            <option value="">Select your team...</option>
+                            <option value="SGLS">SGLS</option>
+                            <option value="SIT">SIT</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="password">Password *</label>
-                    <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password">
-                    <small>Minimum 8 characters</small>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required placeholder="First name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" placeholder="Last name">
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password *</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8" autocomplete="new-password">
-                    <small>Confirm your password</small>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password">
+                        <small>Minimum 8 characters</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password *</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8" autocomplete="new-password">
+                        <small>Must match password</small>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="firstName">First Name *</label>
-                    <input type="text" id="firstName" name="firstName" required placeholder="Enter your first name">
-                </div>
-                
-                <div class="form-group">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" id="lastName" name="lastName" placeholder="Enter your last name">
-                </div>
-                
-                <div class="form-group">
-                    <label for="team">Team</label>
-                    <select id="team" name="team">
-                        <option value="">Select your team...</option>
-                        <option value="Data Center Operations">Data Center Operations</option>
-                        <option value="Facilities">Facilities</option>
-                        <option value="Engineering">Engineering</option>
-                        <option value="IT Operations">IT Operations</option>
-                        <option value="Management">Management</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="businessJustification">Business Justification *</label>
-                    <textarea id="businessJustification" name="businessJustification" required maxlength="500" rows="4" 
-                              placeholder="Please explain why you need access to this application and how you will use it..."
-                              style="width: 100%; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
+                    <textarea id="businessJustification" name="businessJustification" required maxlength="500" rows="3" 
+                              placeholder="Explain why you need access and how you will use it..."></textarea>
                     <small>Maximum 500 characters</small>
                 </div>
                 
-                <button type="submit" class="btn btn-primary btn-register">Register</button>
+                <button type="submit" class="btn btn-primary btn-register">Submit Registration</button>
             </form>
             
             <div class="register-footer">
