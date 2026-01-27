@@ -14,11 +14,11 @@ if __name__ == "__main__":
     if use_proxy:
         # Import the proxy wrapper that mounts at /cooling-monitor
         from app.main_proxy import app
-        print("🚀 Starting Cooling Monitor in PROXY mode (mounted at /cooling-monitor)")
+        print("[START] Starting Cooling Monitor in PROXY mode (mounted at /cooling-monitor)")
     else:
         # Import the regular app
         from app.main import app
-        print("🚀 Starting Cooling Monitor in LOCAL mode (mounted at /)")
+        print("[START] Starting Cooling Monitor in LOCAL mode (mounted at /)")
     
     uvicorn.run(
         app,

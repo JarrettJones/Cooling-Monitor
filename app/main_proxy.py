@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
     
     # Initialize database
     await init_db()
-    print("✓ Database initialized (proxy mode)")
+    print("[OK] Database initialized (proxy mode)")
     
     # Initialize monitoring service
     monitoring_service = MonitoringService()
@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
         id='poll_heat_exchangers'
     )
     scheduler.start()
-    print(f"✓ Monitoring service started (interval: {settings.polling_interval_seconds}s)")
+    print(f"[OK] Monitoring service started (interval: {settings.polling_interval_seconds}s)")
     
     yield
     
@@ -54,8 +54,8 @@ from app.main import app as cooling_monitor_app
 # Mount the cooling monitor app at /cooling-monitor
 app.mount("/cooling-monitor", cooling_monitor_app)
 
-print("✓ Mounted cooling_monitor_app at /cooling-monitor")
-print(f"✓ Available routes:")
+print("[OK] Mounted cooling_monitor_app at /cooling-monitor")
+print("[OK] Available routes:")
 for route in app.routes:
     print(f"  - {route.path}")
 

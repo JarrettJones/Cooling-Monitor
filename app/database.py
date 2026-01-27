@@ -42,9 +42,9 @@ async def init_db():
             )
             session.add(default_admin)
             await session.commit()
-            print("✓ Default admin user created (username: admin, password: admin)")
+            print("[OK] Default admin user created (username: admin, password: admin)")
     
-    print("✓ Database initialized")
+    print("[OK] Database initialized")
 
 
 async def close_db():

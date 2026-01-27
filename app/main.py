@@ -26,9 +26,9 @@ def reschedule_polling_job(interval_seconds: int):
             trigger='interval',
             seconds=interval_seconds
         )
-        print(f"♻️  Rescheduled polling job to {interval_seconds}s interval")
+        print(f"[RESCHEDULE] Rescheduled polling job to {interval_seconds}s interval")
     except Exception as e:
-        print(f"⚠️  Failed to reschedule polling job: {e}")
+        print(f"[WARNING] Failed to reschedule polling job: {e}")
 
 
 @asynccontextmanager
@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
         id='poll_heat_exchangers'
     )
     scheduler.start()
-    print(f"✓ Monitoring service started (interval: {settings.polling_interval_seconds}s)")
+    print(f"[OK] Monitoring service started (interval: {settings.polling_interval_seconds}s)")
     
     yield
     
