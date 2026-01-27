@@ -1,16 +1,16 @@
 :root {
-    --primary-color: #646cff;
-    --primary-hover: #535bf2;
-    --secondary-color: #4a4a4a;
-    --secondary-hover: #5a5a5a;
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary-color: #475569;
+    --secondary-hover: #64748b;
     --danger-color: #f44336;
     --danger-hover: #da190b;
     --success-color: #4caf50;
     --warning-color: #ff9800;
-    --bg-color: #242424;
-    --card-bg: #1a1a1a;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
     --text-color: rgba(255, 255, 255, 0.87);
-    --border-color: #4a4a4a;
+    --border-color: #334155;
 }
 
 * {
