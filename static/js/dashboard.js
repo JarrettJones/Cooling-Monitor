@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     connectWebSocket();
     updateAlertBadge();
     
+    // Refresh dashboard data every 10 seconds
+    setInterval(fetchHeatExchangers, 10000);
+    
     // Update alert badge every 30 seconds
     setInterval(updateAlertBadge, 30000);
     
@@ -334,7 +337,15 @@ async function createHeatExchangerCard(he, data) {
                         </div>
                     ` : ''}
                 </div>
-            ` : ''}
+            ` : `
+                <div style="margin-top: 1rem; padding: 1rem; background-color: rgba(100, 108, 255, 0.1); border-radius: 4px; text-align: center;">
+                    <div style="color: #888; font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;">⏳</div>
+                        <div>Waiting on initial polling...</div>
+                        <div style="font-size: 0.85rem; margin-top: 0.25rem;">Data will be available shortly</div>
+                    </div>
+                </div>
+            `}
             
             ${hasActiveAlerts ? '<span class="alert-indicator"></span>' : ''}
             

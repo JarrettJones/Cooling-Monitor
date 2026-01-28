@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from typing import List
 from datetime import datetime
+import asyncio
 
 from app.database import get_session
 from app.models.heat_exchanger import (
@@ -62,6 +63,21 @@ async def create_heat_exchanger(
             detail="Failed to connect to R-SCM device"
         )
     
+    # Verify manager type is H7021_RPU
+    manager_info = await client.get_manager_info()
+    if not manager_info:
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to retrieve manager information from R-SCM device"
+        )
+    
+    manager_type = manager_info.get("manager_type")
+    if manager_type != "H7021_RPU":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid device type. The IP address provided does not report as a RPU (Manager Type: {manager_type or 'Unknown'})"
+        )
+    
     # Create heat exchanger
     db_heat_exchanger = HeatExchanger(
         name=heat_exchanger.name,
@@ -83,10 +99,11 @@ async def create_heat_exchanger(
         await db.commit()
         await db.refresh(db_heat_exchanger)
         
-        # Immediately poll the new heat exchanger to get initial data
-        monitoring_service = MonitoringService()
-        await monitoring_service.poll_heat_exchanger(db_heat_exchanger.id, db_heat_exchanger.rscm_ip)
-        print(f"✓ Initial poll completed for heat exchanger {db_heat_exchanger.id}")
+        # Trigger immediate background polling for this heat exchanger
+        asyncio.create_task(
+            MonitoringService().poll_heat_exchanger(db_heat_exchanger.id, db_heat_exchanger.rscm_ip)
+        )
+        print(f"✓ Heat exchanger {db_heat_exchanger.id} created. Initial polling started in background.")
         
     except IntegrityError:
         await db.rollback()

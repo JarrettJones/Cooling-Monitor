@@ -41,7 +41,7 @@
     <div class="container">
         <header class="header">
             <h1>🌡️ Cooling Monitor</h1>
-            <p>{% block subtitle %}Real-time Heat Exchanger Monitoring System{% endblock %}</p>
+            <p>{% block subtitle %}Real-time Heat Exchanger Monitoring System{% endblock %} - <span id="versionInfo" style="font-size: 0.85rem; color: #64748b;">Loading...</span></p>
             <nav class="nav">
                 <a href="{{ url_for('home') }}" {% if request.path == "/" or request.path.endswith('/') %}class="active"{% endif %}>Dashboard</a>
                 <a href="{{ url_for('alerts_page') }}" id="alertsNavLink" {% if '/alerts' in request.path %}class="active"{% endif %}>
@@ -66,6 +66,20 @@
     <script src="{{ url_for('static', path='js/constants.js') }}"></script>
     <script src="{{ url_for('static', path='js/auth.js') }}"></script>
     <script src="{{ url_for('static', path='js/navbar.js') }}"></script>
+    <script>
+        // Fetch and display version information
+        async function loadVersionInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/version/`);
+                const version = await response.json();
+                document.getElementById('versionInfo').innerHTML = `Branch: <strong>${version.branch}</strong> | Commit: <strong>${version.commit}</strong>`;
+            } catch (error) {
+                console.error('Failed to load version info:', error);
+                document.getElementById('versionInfo').textContent = 'version unavailable';
+            }
+        }
+        loadVersionInfo();
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

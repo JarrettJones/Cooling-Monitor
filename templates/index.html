@@ -45,7 +45,7 @@
     <div class="container">
         <header class="header">
             <h1>🌡️ Cooling Monitor</h1>
-            <p>Real-time Heat Exchanger Monitoring System</p>
+            <p>Real-time Heat Exchanger Monitoring System - <span id="versionInfo" style="font-size: 0.85rem; color: #64748b;">Loading...</span></p>
             <nav class="nav">
                 <a href="{{ url_for('home') }}" class="active">Dashboard</a>
                 <a href="{{ url_for('alerts_page') }}" id="alertsNavLink">
@@ -87,5 +87,19 @@
             </div>
         </main>
     </div>
+    <script>
+        // Fetch and display version information
+        async function loadVersionInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/version/`);
+                const version = await response.json();
+                document.getElementById('versionInfo').innerHTML = `Branch: <strong>${version.branch}</strong> | Commit: <strong>${version.commit}</strong>`;
+            } catch (error) {
+                console.error('Failed to load version info:', error);
+                document.getElementById('versionInfo').textContent = 'version unavailable';
+            }
+        }
+        loadVersionInfo();
+    </script>
 </body>
 </html>

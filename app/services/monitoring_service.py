@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 from sqlalchemy import select
 import json
+import asyncio
 
 from app.database import async_session_maker
 from app.services.redfish_client import RedfishClient, get_redfish_credentials
@@ -339,7 +340,7 @@ class MonitoringService:
                         print(f"❌ Failed to create sensor alarm alert: {e}")
     
     async def poll_all_heat_exchangers(self):
-        """Poll all active heat exchangers"""
+        """Poll all active heat exchangers concurrently"""
         try:
             # Check if async_session_maker is initialized
             from app.database import async_session_maker as session_maker
@@ -353,8 +354,33 @@ class MonitoringService:
                 )
                 heat_exchangers = result.scalars().all()
                 
-                for he in heat_exchangers:
-                    await self.poll_heat_exchanger(he.id, he.rscm_ip)
+                if not heat_exchangers:
+                    print("No active heat exchangers to poll")
+                    return
+                
+                # Poll up to 30 heat exchangers concurrently
+                max_concurrent = 30
+                print(f"Polling {len(heat_exchangers)} heat exchangers (max {max_concurrent} concurrent)")
+                
+                # Create polling tasks for all heat exchangers
+                tasks = [
+                    self.poll_heat_exchanger(he.id, he.rscm_ip) 
+                    for he in heat_exchangers
+                ]
+                
+                # Process in batches of max_concurrent
+                for i in range(0, len(tasks), max_concurrent):
+                    batch = tasks[i:i + max_concurrent]
+                    batch_results = await asyncio.gather(*batch, return_exceptions=True)
+                    
+                    # Log any errors from this batch
+                    for idx, result in enumerate(batch_results):
+                        if isinstance(result, Exception):
+                            he_id = heat_exchangers[i + idx].id
+                            print(f"Error polling heat exchanger {he_id}: {result}")
+                    
+                print(f"✓ Completed polling cycle for {len(heat_exchangers)} heat exchangers")
+                
         except Exception as e:
             print(f"Error polling all heat exchangers: {e}")
 

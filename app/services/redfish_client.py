@@ -52,7 +52,6 @@ class RedfishClient:
                         auth=(self.username, self.password),
                         timeout=10.0
                     )
-                    print(f"DEBUG: Response status: {response.status_code}")
                     response.raise_for_status()
                     return response.json()
             except Exception as e:
