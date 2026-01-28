@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from pydantic import BaseModel
+from typing import Optional
 from app.database import Base
 
 
@@ -17,6 +18,7 @@ class HeatExchanger(Base):
     room = Column(String, nullable=False)
     tile = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+    program_id = Column(Integer, ForeignKey('programs.id'), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -38,9 +40,10 @@ class HeatExchanger(Base):
     pump_status = Column(String, nullable=True)  # JSON string for pump status array
     urgent_alarms = Column(String, nullable=True)  # JSON string for urgent alarms
     
-    # Relationship
+    # Relationships
     monitoring_data = relationship("MonitoringData", back_populates="heat_exchanger", cascade="all, delete-orphan")
     alerts = relationship("Alert", back_populates="heat_exchanger", cascade="all, delete-orphan")
+    program = relationship("Program")
 
 # Pydantic schemas for API
 class Location(BaseModel):
@@ -56,6 +59,7 @@ class HeatExchangerBase(BaseModel):
     rscm_ip: str
     location: Location
     is_active: bool = True
+    program_id: Optional[int] = None
 
 
 class HeatExchangerCreate(HeatExchangerBase):
@@ -68,6 +72,7 @@ class HeatExchangerUpdate(BaseModel):
     rscm_ip: str | None = None
     location: Location | None = None
     is_active: bool | None = None
+    program_id: Optional[int] = None
 
 
 class HeatExchangerResponse(BaseModel):
@@ -77,6 +82,8 @@ class HeatExchangerResponse(BaseModel):
     rscm_ip: str
     location: Location
     is_active: bool
+    program_id: Optional[int] = None
+    program_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     
@@ -115,6 +122,8 @@ class HeatExchangerResponse(BaseModel):
                 tile=db_model.tile
             ),
             is_active=db_model.is_active,
+            program_id=db_model.program_id,
+            program_name=db_model.program.name if db_model.program else None,
             created_at=db_model.created_at,
             updated_at=db_model.updated_at,
             manager_type=db_model.manager_type,

@@ -2,15 +2,51 @@
 const isEdit = HEAT_EXCHANGER_ID && HEAT_EXCHANGER_ID.length > 0;
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadPrograms();
+    
     if (isEdit) {
         document.getElementById('form-title').textContent = 'Edit Heat Exchanger';
         document.getElementById('submit-btn').textContent = 'Update';
-        fetchHeatExchanger();
+        await fetchHeatExchanger();
     }
     
     setupForm();
 });
+
+// Load programs into dropdown
+async function loadPrograms() {
+    try {
+        console.log('Loading programs...');
+        const response = await fetch(`${API_BASE}/programs/`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch programs: ${response.status}`);
+        }
+        const programs = await response.json();
+        console.log('Programs loaded:', programs);
+        
+        const select = document.getElementById('program');
+        if (!select) {
+            console.error('Program select element not found!');
+            return;
+        }
+        
+        // Clear existing options except the first one
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        programs.forEach(program => {
+            const option = document.createElement('option');
+            option.value = program.id;
+            option.textContent = program.name;
+            select.appendChild(option);
+        });
+        console.log('Programs added to dropdown');
+    } catch (error) {
+        console.error('Failed to load programs:', error);
+    }
+}
 
 // Fetch heat exchanger for editing
 async function fetchHeatExchanger() {
@@ -20,6 +56,7 @@ async function fetchHeatExchanger() {
         
         document.getElementById('name').value = he.name;
         document.getElementById('type').value = he.type || '';
+        document.getElementById('program').value = he.program_id || '';
         document.getElementById('rscm_ip').value = he.rscm_ip;
         document.getElementById('city').value = he.location.city;
         document.getElementById('building').value = he.location.building;
@@ -45,6 +82,7 @@ function setupForm() {
                 room: document.getElementById('room').value,
                 tile: document.getElementById('tile').value
             },
+            program_id: parseInt(document.getElementById('program').value) || null,
             is_active: true
         };
         

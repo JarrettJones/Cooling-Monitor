@@ -87,7 +87,8 @@ async def create_heat_exchanger(
         building=heat_exchanger.location.building,
         room=heat_exchanger.location.room,
         tile=heat_exchanger.location.tile,
-        is_active=heat_exchanger.is_active
+        is_active=heat_exchanger.is_active,
+        program_id=heat_exchanger.program_id
     )
     
     # Force SQLAlchemy to detect the type field change

@@ -27,20 +27,34 @@ async function checkUserRole() {
 
 // Setup event listeners
 function setupEventListeners() {
-    document.getElementById('addUserBtn').addEventListener('click', () => {
-        openModal();
-    });
+    const addUserBtn = document.getElementById('addUserBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const userForm = document.getElementById('userForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', () => {
+            openModal();
+        });
+    }
 
-    document.getElementById('cancelBtn').addEventListener('click', () => {
-        closeModal();
-    });
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            closeModal();
+        });
+    }
 
-    document.getElementById('userForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await saveUser();
-    });
+    if (userForm) {
+        userForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveUser();
+        });
+    }
 
-    document.getElementById('logoutBtn').addEventListener('click', logout);
+    if (logoutBtn && !logoutBtn.hasAttribute('data-listener-added')) {
+        logoutBtn.addEventListener('click', logout);
+        logoutBtn.setAttribute('data-listener-added', 'true');
+    }
 }
 
 // Load all users
@@ -59,14 +73,22 @@ async function loadUsers() {
         renderUsers();
     } catch (error) {
         console.error('Error loading users:', error);
-        document.getElementById('usersBody').innerHTML = 
-            '<tr><td colspan="4" style="text-align: center; color: var(--danger-color);">Failed to load users</td></tr>';
+        const tbody = document.getElementById('usersBody') || document.getElementById('usersTableBody');
+        if (tbody) {
+            tbody.innerHTML = 
+                '<tr><td colspan="5" style="text-align: center; color: var(--danger-color);">Failed to load users</td></tr>';
+        }
     }
 }
 
 // Render users table
 function renderUsers() {
-    const tbody = document.getElementById('usersBody');
+    const tbody = document.getElementById('usersBody') || document.getElementById('usersTableBody');
+    
+    if (!tbody) {
+        console.error('Users table body not found');
+        return;
+    }
 
     if (users.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No users found</td></tr>';
@@ -78,25 +100,19 @@ function renderUsers() {
             <td>
                 ${escapeHtml(user.username)}
                 ${!user.is_active ? '<span style="color: var(--warning-color); font-size: 0.875rem; margin-left: 0.5rem;">(Pending)</span>' : ''}
-                ${!user.is_active ? `<br><small style="color: var(--text-secondary);">${escapeHtml(user.email)}</small>` : ''}
             </td>
-            <td><span class="role-badge role-${user.role}">${user.role}</span></td>
-            <td>${formatDate(user.created_at)}</td>
+            <td>${escapeHtml(user.email || 'N/A')}</td>
+            <td><span class="role-badge" style="padding: 0.25rem 0.5rem; background-color: ${user.is_admin ? 'var(--primary-color)' : 'var(--secondary-color)'}; color: white; border-radius: 4px; font-size: 0.875rem;">${user.is_admin ? 'Admin' : 'Technician'}</span></td>
+            <td><span style="padding: 0.25rem 0.5rem; background-color: ${user.is_active ? 'var(--success-color)' : 'var(--warning-color)'}; color: white; border-radius: 4px; font-size: 0.875rem;">${user.is_active ? 'Active' : 'Pending'}</span></td>
             <td>
                 ${!user.is_active ? `
-                    <button class="btn btn-secondary btn-small" onclick="viewUserDetails(${user.id})">View Details</button>
-                    <button class="btn btn-success btn-small" onclick="approveUser(${user.id}, '${escapeHtml(user.username)}')">Approve</button>
-                    <button class="btn btn-danger btn-small" onclick="denyUser(${user.id}, '${escapeHtml(user.username)}')">Deny</button>
+                    <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.875rem;" onclick="viewUserDetails(${user.id})">View Details</button>
+                    <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.875rem; background-color: var(--success-color);" onclick="approveUser(${user.id}, '${escapeHtml(user.username)}')">Approve</button>
+                    <button class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.875rem;" onclick="denyUser(${user.id}, '${escapeHtml(user.username)}')">Deny</button>
                 ` : `
-                    <button class="btn btn-secondary btn-small" onclick="editUser(${user.id})">Edit</button>
-                    <button class="btn btn-danger btn-small" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')">Delete</button>
+                    <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.875rem;" onclick="editUser(${user.id})">Edit</button>
+                    <button class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.875rem;" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')">Delete</button>
                 `}
-            </td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn btn-small" onclick="editUser(${user.id})">Edit</button>
-                    <button class="btn btn-small btn-danger" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')">Delete</button>
-                </div>
             </td>
         </tr>
     `).join('');
@@ -109,6 +125,12 @@ function openModal(user = null) {
     const title = document.getElementById('modalTitle');
     const passwordInput = document.getElementById('password');
     const passwordHelp = document.getElementById('passwordHelp');
+    
+    if (!modal || !form) {
+        // In admin panel, show alert for now (modal doesn't exist)
+        alert('User creation modal not yet implemented in admin panel. Please use the standalone Users page.');
+        return;
+    }
 
     form.reset();
 
@@ -132,6 +154,11 @@ function openModal(user = null) {
     }
 
     modal.style.display = 'flex';
+}
+
+// Alias for template
+function showCreateUserModal() {
+    openModal();
 }
 
 // Close modal

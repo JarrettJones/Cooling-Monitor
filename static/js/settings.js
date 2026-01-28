@@ -15,13 +15,20 @@ async function checkUserRole() {
         const response = await fetch(`${API_BASE}/auth/me`);
         if (response.ok) {
             const user = await response.json();
-            document.getElementById('currentUser').textContent = `👤 ${user.username}`;
+            const currentUserEl = document.getElementById('currentUser');
+            if (currentUserEl) {
+                currentUserEl.textContent = `👤 ${user.username}`;
+            }
             
             // Setup logout
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
-                navigateTo('/login');
-            });
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn && !logoutBtn.hasAttribute('data-settings-listener')) {
+                logoutBtn.addEventListener('click', async () => {
+                    await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+                    navigateTo('/login');
+                });
+                logoutBtn.setAttribute('data-settings-listener', 'true');
+            }
         } else {
             navigateTo('/login');
         }
@@ -37,18 +44,26 @@ async function loadCurrentCredentials() {
         if (!response.ok) throw new Error('Failed to load credentials');
         
         const data = await response.json();
-        document.getElementById('username').value = data.username;
         
-        if (data.updated_at) {
-            const date = new Date(data.updated_at);
-            document.getElementById('lastUpdated').textContent = date.toLocaleString();
-        } else {
-            document.getElementById('lastUpdated').textContent = 'Never';
+        const usernameField = document.getElementById('username');
+        const lastUpdatedField = document.getElementById('lastUpdated');
+        const passwordField = document.getElementById('password');
+        const confirmPasswordField = document.getElementById('confirmPassword');
+        
+        if (usernameField) usernameField.value = data.username;
+        
+        if (lastUpdatedField) {
+            if (data.updated_at) {
+                const date = new Date(data.updated_at);
+                lastUpdatedField.textContent = date.toLocaleString();
+            } else {
+                lastUpdatedField.textContent = 'Never';
+            }
         }
         
         // Clear password fields
-        document.getElementById('password').value = '';
-        document.getElementById('confirmPassword').value = '';
+        if (passwordField) passwordField.value = '';
+        if (confirmPasswordField) confirmPasswordField.value = '';
         
     } catch (error) {
         console.error('Error loading credentials:', error);
@@ -58,6 +73,10 @@ async function loadCurrentCredentials() {
 
 function setupForm() {
     const form = document.getElementById('credentialsForm');
+    if (!form) {
+        console.log('Credentials form not found, skipping setup');
+        return;
+    }
     
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -112,6 +131,10 @@ function setupForm() {
 
 function showMessage(text, type) {
     const messageDiv = document.getElementById('message');
+    if (!messageDiv) {
+        console.log('Message div not found:', text);
+        return;
+    }
     messageDiv.textContent = text;
     messageDiv.style.display = 'block';
     
@@ -135,25 +158,43 @@ async function loadSMTPSettings() {
         if (!response.ok) throw new Error('Failed to load SMTP settings');
         
         const data = await response.json();
-        document.getElementById('smtp_enabled').checked = data.smtp_enabled;
-        document.getElementById('smtp_server').value = data.smtp_server || '';
-        document.getElementById('smtp_port').value = data.smtp_port || 587;
-        document.getElementById('smtp_username').value = data.smtp_username || '';
-        document.getElementById('smtp_from_email').value = data.smtp_from_email || '';
-        document.getElementById('smtp_to_emails').value = data.smtp_to_emails ? data.smtp_to_emails.join(', ') : '';
-        document.getElementById('smtp_use_tls').checked = data.smtp_use_tls !== false;
-        document.getElementById('teams_enabled').checked = data.teams_enabled || false;
-        document.getElementById('teams_webhook_url').value = data.teams_webhook_url || '';
-        document.getElementById('pump_flow_critical_threshold').value = data.pump_flow_critical_threshold || 10.0;
+        
+        // Get all form elements with null checks
+        const smtp_enabled = document.getElementById('smtp_enabled');
+        const smtp_server = document.getElementById('smtp_server');
+        const smtp_port = document.getElementById('smtp_port');
+        const smtp_username = document.getElementById('smtp_username');
+        const smtp_from_email = document.getElementById('smtp_from_email');
+        const smtp_to_emails = document.getElementById('smtp_to_emails');
+        const smtp_use_tls = document.getElementById('smtp_use_tls');
+        const teams_enabled = document.getElementById('teams_enabled');
+        const teams_webhook_url = document.getElementById('teams_webhook_url');
+        const pump_flow_critical_threshold = document.getElementById('pump_flow_critical_threshold');
+        const smtp_password = document.getElementById('smtp_password');
+        const smtpLastUpdated = document.getElementById('smtpLastUpdated');
+        
+        // Update values only if elements exist
+        if (smtp_enabled) smtp_enabled.checked = data.smtp_enabled;
+        if (smtp_server) smtp_server.value = data.smtp_server || '';
+        if (smtp_port) smtp_port.value = data.smtp_port || 587;
+        if (smtp_username) smtp_username.value = data.smtp_username || '';
+        if (smtp_from_email) smtp_from_email.value = data.smtp_from_email || '';
+        if (smtp_to_emails) smtp_to_emails.value = data.smtp_to_emails ? data.smtp_to_emails.join(', ') : '';
+        if (smtp_use_tls) smtp_use_tls.checked = data.smtp_use_tls !== false;
+        if (teams_enabled) teams_enabled.checked = data.teams_enabled || false;
+        if (teams_webhook_url) teams_webhook_url.value = data.teams_webhook_url || '';
+        if (pump_flow_critical_threshold) pump_flow_critical_threshold.value = data.pump_flow_critical_threshold || 10.0;
         
         // Clear password field
-        document.getElementById('smtp_password').value = '';
+        if (smtp_password) smtp_password.value = '';
         
-        if (data.updated_at) {
-            const date = new Date(data.updated_at);
-            document.getElementById('smtpLastUpdated').textContent = date.toLocaleString();
-        } else {
-            document.getElementById('smtpLastUpdated').textContent = 'Never';
+        if (smtpLastUpdated) {
+            if (data.updated_at) {
+                const date = new Date(data.updated_at);
+                smtpLastUpdated.textContent = date.toLocaleString();
+            } else {
+                smtpLastUpdated.textContent = 'Never';
+            }
         }
         
     } catch (error) {
@@ -164,6 +205,11 @@ async function loadSMTPSettings() {
 
 function setupSMTPForm() {
     const form = document.getElementById('smtpForm');
+    
+    if (!form) {
+        console.log('SMTP form not found, skipping setup');
+        return;
+    }
     
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -219,6 +265,10 @@ function setupSMTPForm() {
 
 function showSMTPMessage(text, type) {
     const messageDiv = document.getElementById('smtpMessage');
+    if (!messageDiv) {
+        console.log('SMTP message div not found:', text);
+        return;
+    }
     messageDiv.textContent = text;
     messageDiv.style.display = 'block';
     

@@ -49,8 +49,7 @@
                     <span id="alertBadge" class="alert-badge" style="display: none;">0</span>
                 </a>
                 <a href="{{ url_for('heat_exchanger_form') }}" id="addHeatExchangerLink" style="opacity: 0; pointer-events: none;" {% if '/heat-exchanger-form' in request.path %}class="active"{% endif %}>Add Heat Exchanger</a>
-                <a href="{{ url_for('users_page') }}" id="usersLink" style="opacity: 0; pointer-events: none;" {% if '/users' in request.path %}class="active"{% endif %}>Users</a>
-                <a href="{{ url_for('settings_page') }}" id="settingsLink" style="opacity: 0; pointer-events: none;" {% if '/settings' in request.path %}class="active"{% endif %}>Settings</a>
+                <a href="{{ url_for('settings_page') }}" id="settingsLink" style="opacity: 0; pointer-events: none;" {% if '/settings' in request.path %}class="active"{% endif %}>Admin Panel</a>
                 <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
                     <span id="currentUser" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
                     <button id="logoutBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>

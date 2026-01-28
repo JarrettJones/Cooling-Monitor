@@ -27,6 +27,8 @@ async def init_db():
     from app.models.monitoring_data import MonitoringData
     from app.models.settings import SystemSettings
     from app.models.user import User
+    from app.models.alert import Alert
+    from app.models.program import Program
     
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

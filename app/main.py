@@ -7,7 +7,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from app.config import settings
 from app.database import init_db, close_db
-from app.routers import heat_exchangers, monitoring, settings as settings_router, auth, alerts, users, version
+from app.routers import heat_exchangers, monitoring, settings as settings_router, auth, alerts, users, version, programs
 from app.routers.auth import get_current_user, require_admin
 from app.models.user import User
 from app.services.websocket_manager import manager
@@ -79,6 +79,7 @@ app.include_router(monitoring.router)
 app.include_router(settings_router.router)
 app.include_router(alerts.router)
 app.include_router(version.router)
+app.include_router(programs.router)
 
 
 # Health check
