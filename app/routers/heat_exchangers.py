@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import IntegrityError
 from typing import List
 from datetime import datetime
@@ -25,7 +26,9 @@ router = APIRouter(prefix="/api/heat-exchangers", tags=["heat-exchangers"])
 async def get_all_heat_exchangers(db: AsyncSession = Depends(get_session)):
     """Get all heat exchangers"""
     result = await db.execute(
-        select(HeatExchanger).order_by(HeatExchanger.created_at.desc())
+        select(HeatExchanger)
+        .options(selectinload(HeatExchanger.program))
+        .order_by(HeatExchanger.created_at.desc())
     )
     heat_exchangers = result.scalars().all()
     return [HeatExchangerResponse.from_orm_model(he) for he in heat_exchangers]
@@ -35,7 +38,9 @@ async def get_all_heat_exchangers(db: AsyncSession = Depends(get_session)):
 async def get_heat_exchanger(heat_exchanger_id: int, db: AsyncSession = Depends(get_session)):
     """Get heat exchanger by ID"""
     result = await db.execute(
-        select(HeatExchanger).where(HeatExchanger.id == heat_exchanger_id)
+        select(HeatExchanger)
+        .options(selectinload(HeatExchanger.program))
+        .where(HeatExchanger.id == heat_exchanger_id)
     )
     heat_exchanger = result.scalar_one_or_none()
     
