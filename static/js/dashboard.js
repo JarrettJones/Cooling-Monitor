@@ -283,7 +283,10 @@ async function createHeatExchangerCard(he, data) {
     return `
         <div class="card ${hasUrgentAlarms ? 'urgent-alarm-card' : ''}">
             <h3>${he.name}</h3>
-            ${he.type ? `<div style="display: inline-block; padding: 0.25rem 0.5rem; background-color: var(--secondary-color); color: white; border-radius: 4px; font-size: 0.85rem; margin-top: 0.5rem;">${he.type}</div>` : ''}
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                ${he.type ? `<span style="display: inline-block; padding: 0.25rem 0.5rem; background-color: var(--secondary-color); color: white; border-radius: 4px; font-size: 0.85rem;">${he.type}</span>` : ''}
+                ${he.program_name ? `<span style="display: inline-block; padding: 0.25rem 0.5rem; background-color: var(--primary-color); color: white; border-radius: 4px; font-size: 0.85rem;">📋 ${he.program_name}</span>` : ''}
+            </div>
             <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #888;">
                 <p>📍 ${he.location.city}, ${he.location.building}</p>
                 <p>🚪 Room ${he.location.room}, Tile ${he.location.tile}</p>
