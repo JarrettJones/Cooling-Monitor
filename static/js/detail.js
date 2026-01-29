@@ -76,6 +76,12 @@ function renderHeatExchanger(he) {
             <strong>R-SCM IP:</strong>
             <p>${he.rscm_ip}</p>
         </div>
+        ${he.program_name ? `
+            <div>
+                <strong>Program:</strong>
+                <p style="display: inline-block; padding: 0.35rem 0.75rem; background-color: var(--primary-color); color: white; border-radius: 4px; font-weight: 600;">📋 ${he.program_name}</p>
+            </div>
+        ` : ''}
         <div>
             <strong>Status:</strong>
             <p>${he.is_active ? '✅ Active' : '❌ Inactive'}</p>
